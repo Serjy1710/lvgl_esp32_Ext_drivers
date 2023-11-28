@@ -18,6 +18,8 @@ swap of RGB565 color on the LVGL configuration menuconfig (it's not handled auto
 
 | Display Controller                          | Type       | Interface              | Color depth (LV_COLOR_DEPTH) | Swap RGB565 color (LV_COLOR_16_SWAP)   |
 |---------------------------------------------|------------|------------------------|------------------------------|----------------------------------------|
+| ILI9225*                                    | TFT        | SPI                    | 16: RGB565                   | Yes                                    |
+| SSD1963*                                    | TFT        | 8bit** MCU (8080)      | 16/32: RGB565/RGB888***      | No                                     |
 | ILI9341                                     | TFT        | SPI                    | 16: RGB565                   | Yes                                    |
 | ILI9163C                                    | TFT        | SPI                    | 16: RGB565                   | Yes                                    |
 | ILI9486                                     | TFT        | SPI                    | 16: RGB565                   | Yes                                    |
@@ -34,6 +36,11 @@ swap of RGB565 color on the LVGL configuration menuconfig (it's not handled auto
 | IL3820                                      | e-Paper    | SPI                    | 1: 1byte per pixel           | No                                     |
 | UC8151D/ GoodDisplay GDEW0154M10 DES        | e-Paper    | SPI                    | 1: 1byte per pixel           | No                                     |
 | FitiPower JD79653A/ GoodDisplay GDEW0154M09 | e-Paper    | SPI                    | 1: 1byte per pixel           | No                                     |
+
+*) Added in Ext_pack
+**) No DMA support. May requre to set custom INI values for LCD panel used. Tested with Winstar wf43qtibedbna 4.3" 480x272 TFT LCD display. PWM brightness control allowed.
+***) Actual display color format 24 bit RGB. RGB565 16-bit colors upscaled to 24-bit RGB in driver.
+
 
 ## Supported indev controllers
 
