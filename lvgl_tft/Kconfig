@@ -144,6 +144,11 @@ menu "LVGL TFT Display controller"
         help
             SSD1306 display controller.
 
+    config LV_TFT_DISPLAY_CONTROLLER_SSD1963
+        bool
+        help
+            SSD1963 8bit parallel bus (MCU 8080) display controller for ESP32.
+
     config LV_TFT_DISPLAY_CONTROLLER_FT81X
         bool
         help
@@ -326,6 +331,9 @@ menu "LVGL TFT Display controller"
             select LV_TFT_DISPLAY_CONTROLLER_SSD1306
             select LV_I2C_DISPLAY
             select LV_TFT_DISPLAY_MONOCHROME
+        config LV_TFT_DISPLAY_USER_CONTROLLER_SSD1963
+            bool "SSD1963"
+            select LV_TFT_DISPLAY_CONTROLLER_SSD1963
         config LV_TFT_DISPLAY_USER_CONTROLLER_FT81X
             bool "FT81X"
             select LV_TFT_DISPLAY_CONTROLLER_FT81X

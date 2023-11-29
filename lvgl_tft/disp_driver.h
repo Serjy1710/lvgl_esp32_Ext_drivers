@@ -56,6 +56,8 @@ extern "C" {
 #include "ili9163c.h"
 #elif defined CONFIG_LV_TFT_DISPLAY_CONTROLLER_PCD8544
 #include "pcd8544.h"
+#elif defined CONFIG_LV_TFT_DISPLAY_CONTROLLER_SSD1963
+#include "ssd1963.h"
 #endif
 
 /*********************

@@ -110,7 +110,8 @@ void lvgl_driver_init(void)
 #elif defined (CONFIG_LV_I2C_DISPLAY)
     disp_driver_init();
 #else
-#error "No protocol defined for display controller"
+    disp_driver_init();
+//#error "No protocol defined for display controller"
 #endif
 
 /* Touch controller initialization */
