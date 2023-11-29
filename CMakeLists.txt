@@ -9,6 +9,8 @@ list(APPEND SOURCES "lvgl_tft/esp_lcd_backlight.c")
 # display controller.
 if(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9341)
     list(APPEND SOURCES "lvgl_tft/ili9341.c")
+elseif(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9225)
+    list(APPEND SOURCES "lvgl_tft/ili9225.c")
 elseif(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9481)
     list(APPEND SOURCES "lvgl_tft/ili9481.c")
 elseif(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9486)

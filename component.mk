@@ -13,6 +13,7 @@ CFLAGS += -DLV_LVGL_H_INCLUDE_SIMPLE
 COMPONENT_ADD_INCLUDEDIRS += lvgl_tft
 
 $(call compile_only_if,$(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9341),lvgl_tft/ili9341.o)
+$(call compile_only_if,$(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9225),lvgl_tft/ili9225.o)
 $(call compile_only_if,$(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9481),lvgl_tft/ili9481.o)
 $(call compile_only_if,$(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9486),lvgl_tft/ili9486.o)
 $(call compile_only_if,$(CONFIG_LV_TFT_DISPLAY_CONTROLLER_ILI9488),lvgl_tft/ili9488.o)
