@@ -20,8 +20,8 @@
 
 
 //ESP32_VS_HW2 Pinout
-#define DC		27 //0x8000000 //CONFIG_LV_DISP_PIN_DC
-#define WR		05 //0x20      //CONFIG_LV_DISP_PIN_DC
+#define DC		CONFIG_LV_DISP_8BIT_DC_PIN//27 //0x8000000 //
+#define WR		CONFIG_LV_DISP_8BIT_WR_PIN//05 //0x20      //
 #define D0		12 //0x000FF000 <<12
 #define D1		13
 #define D2		14

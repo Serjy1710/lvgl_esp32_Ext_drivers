@@ -758,6 +758,10 @@ menu "LVGL TFT Display controller"
 
     endmenu
 
+
+
+
+    
     # menu will be visible only when LV_PREDEFINED_DISPLAY_NONE is y
     menu "Display Pin Assignments"
     visible if LV_PREDEFINED_DISPLAY_NONE || LV_PREDEFINED_DISPLAY_RPI_MPI3501 || LV_PREDEFINED_PINS_TKOALA
@@ -777,6 +781,7 @@ menu "LVGL TFT Display controller"
             default 13
             help
                 Configure the display MOSI pin here.
+
 
         config LV_DISPLAY_USE_SPI_MISO
             bool "GPIO for MISO (Master In Slave Out)" if LV_TFT_DISPLAY_PROTOCOL_SPI
@@ -954,6 +959,18 @@ menu "LVGL TFT Display controller"
                 Component config->I2C Port Settings.
 
     endchoice
+    #        prompt "MCU 8080 8bit bus uses predefined pins GPIO12 - GPIO19 for D0-D7 on ESP32 chip. No HW reset pin used. No RD pin used. Define DC and WR pins here."
+    config LV_DISP_8BIT_DC_PIN 
+        int "GPIO for DC (MCU 8bit 8080 bus)" if LV_TFT_DISPLAY_CONTROLLER_SSD1963
+        default 27
+        help
+            Configure the MCU 8080 bus DC pin here.    
+
+    config LV_DISP_8BIT_WR_PIN
+        int "GPIO for WR (MCU 8bit 8080 bus)" if LV_TFT_DISPLAY_CONTROLLER_SSD1963
+        default 5
+        help
+            Configure the MCU 8080 bus WR pin here.  
 
     choice
         default LV_DISP_BACKLIGHT_SWITCH

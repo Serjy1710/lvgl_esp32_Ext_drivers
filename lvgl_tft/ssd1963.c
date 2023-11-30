@@ -18,10 +18,13 @@
  *********************/
  #define TAG "SSD1963"
 
+
 /**********************
  *      TYPEDEFS
  **********************/
-
+const uint32_t dc_pin=(1<<DC);
+const uint32_t wr_pin=(1<<WR);
+const uint32_t clr_bus8=(0xFF000|wr_pin);
 
 gpio_dev_t *dev= GPIO_HAL_GET_HW(GPIO_PORT_0);
 
@@ -41,15 +44,15 @@ inline void ssd1963_write_command(uint8_t commandToWrite)
 //uint32_t cmd=commandToWrite;
 
 //dev->out_w1ts = (cmd<< 12); 
-dev->out_w1tc = (0x8000000); //DC PIN27
+dev->out_w1tc = dc_pin;//(0x8000000); //DC PIN27
 
 //cmd=((uint32_t)commandToWrite << 12);
 //printf("CMD:%u\n",cmd );
-dev->out_w1tc = (0xFF020); //WR PIN05 && clear DATA
+dev->out_w1tc = clr_bus8;//(clr_bus8); //WR PIN05 && clear DATA
 dev->out_w1ts = ((uint32_t) commandToWrite<< 12); //DATA PIN12 - 19  50ns
-dev->out_w1ts = (0x20); //WR PIN05 
+dev->out_w1ts = wr_pin;//(0x20); //WR PIN05 
 
-dev->out_w1ts = (0x8000000); //DC PIN27
+dev->out_w1ts = dc_pin;//(0x8000000); //DC PIN27
 
 }
 //-------------------------------------------------------------------------------------------------
@@ -66,9 +69,9 @@ inline void ssd1963_write_data(uint8_t dataToWrite)
 */
 //uint32_t cmd=dataToWrite;
 
-dev->out_w1tc = (0xFF020); //WR PIN05 && clear DATA
+dev->out_w1tc = clr_bus8;//WR PIN05 && clear DATA
 dev->out_w1ts = ((uint32_t) dataToWrite<< 12); //DATA PIN12 - 19  50ns
-dev->out_w1ts = (0x20); //WR PIN05 
+dev->out_w1ts = wr_pin; //WR PIN05 
 
 
 }
@@ -81,18 +84,18 @@ inline void ssd1963_color_pixel(uint32_t color)
 	ssd1963_write_data( (color>>16)&0xFF );
 */
 
-dev->out_w1tc = (0xFF020); //WR PIN05 && clear DATA
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
 dev->out_w1ts = ((color<< 12)&0xFF000); //DATA PIN12 - 19  50ns
-dev->out_w1ts = (0x20); //WR PIN05 
+dev->out_w1ts = (wr_pin); //WR PIN05 
 
-dev->out_w1tc = (0xFF020); //WR PIN05 && clear DATA
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
 dev->out_w1ts = ((color<< 4)&0xFF000); //DATA PIN12 - 19  50ns
-dev->out_w1ts = (0x20); //WR PIN05 
+dev->out_w1ts = (wr_pin); //WR PIN05 
 
 
-dev->out_w1tc = (0xFF020); //WR PIN05 && clear DATA
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
 dev->out_w1ts = ((color>> 4)&0xFF000); //DATA PIN12 - 19  50ns
-dev->out_w1ts = (0x20); //WR PIN05 
+dev->out_w1ts = (wr_pin); //WR PIN05 
 
 }
 
@@ -103,11 +106,11 @@ void ssd1963_init(void)
 	gpio_conf.pull_up_en =	GPIO_PULLUP_DISABLE;
 	gpio_conf.pull_down_en = GPIO_PULLUP_DISABLE;
 	gpio_conf.intr_type = GPIO_INTR_DISABLE;   
-	gpio_conf.pin_bit_mask = 0x80FF020; //!!! SET CONFIG_ DC & WR
+	gpio_conf.pin_bit_mask = (0xFF000|wr_pin|dc_pin); //!!! SET CONFIG_ DC & WR
 	ESP_ERROR_CHECK(gpio_config(&gpio_conf));
 
-dev->out_w1ts = (0x8000000); //DC PIN27 !!! SET CONFIG_ DC & WR
-dev->out_w1ts = (0x20); //WR PIN05  !!! SET CONFIG_ DC & WR
+dev->out_w1ts = (dc_pin); //DC PIN27 !!! SET CONFIG_ DC & WR
+dev->out_w1ts = (wr_pin); //WR PIN05  !!! SET CONFIG_ DC & WR
 
 	ssd1963_write_command(0xe2);
 	ssd1963_write_data(0x1d);
@@ -171,17 +174,18 @@ dev->out_w1ts = (0x20); //WR PIN05  !!! SET CONFIG_ DC & WR
 	//Command_Write(0x36,0x08);   // CONFIG_LV_DISPLAY_ORIENTATION
 	ssd1963_write_command(0x36);
 switch (CONFIG_LV_DISPLAY_ORIENTATION) {
-		default:
-	ssd1963_write_data(0x00);
+	case 0:
+	ssd1963_write_data(0x21); //0
 		break;
 	case 1:
-	ssd1963_write_data(0x21);
+	ssd1963_write_data(0x22);	//1	
 		break;	
 			case 2:
-	ssd1963_write_data(0x17);			
+	ssd1963_write_data(0x00);  //2
 		break;	
-			case 3:
-	ssd1963_write_data(0x22);			
+
+		default:
+	ssd1963_write_data(0x17);			//3		
 		break;	
 }
 
@@ -282,6 +286,7 @@ void ssd1963_draw_bitmap32(uint32_t size, uint32_t x1, uint32_t y1, int32_t x2, 
     lv_coord_t end_x ;
     lv_coord_t start_y ;
     lv_coord_t end_y ;
+	uint32_t color;
 if (drv->rotated == 1) {
      start_x = area->y1;
      end_x = area->y2;
@@ -322,8 +327,40 @@ if (drv->rotated == 1) {
 
 	for(uint32_t pix=0; pix < size; pix++)
 	{
-		ssd1963_color_pixel(color_map[pix].full);
+//		ssd1963_color_pixel(color_map[pix].full);
+color=color_map[pix].full;
+#ifdef CONFIG_LV_COLOR_DEPTH_32
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
+dev->out_w1ts = ((color<< 12)&0xFF000); //DATA PIN12 - 19  50ns
+dev->out_w1ts = (wr_pin); //WR PIN05 
 
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
+dev->out_w1ts = ((color<< 4)&0xFF000); //DATA PIN12 - 19  50ns
+dev->out_w1ts = (wr_pin); //WR PIN05 
+
+
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
+dev->out_w1ts = ((color>> 4)&0xFF000); //DATA PIN12 - 19  50ns
+dev->out_w1ts = (wr_pin); //WR PIN05 
+#else //if CONFIG_LV_COLOR_DEPTH_16
+/* RGB565 -> RGB888 using integer approximation
+r8 = ( r5 << 3 ) | (r5 >> 2);
+g8 = ( g6 << 2 ) | (g6 >> 4);
+b8 = ( b5 << 3 ) | (b5 >> 2);
+*/
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
+dev->out_w1ts = ((color&0xF800)<< 4)|((color&0xE000)>>1); //R8
+dev->out_w1ts = (wr_pin); //WR PIN05 
+
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
+dev->out_w1ts = ((color&0x7E0)<< 9)|((color&0x700)<<4); //G8
+dev->out_w1ts = (wr_pin); //WR PIN05 
+
+
+dev->out_w1tc = (clr_bus8); //WR PIN05 && clear DATA
+dev->out_w1ts = ((color&0x1F)<< 15)|((color&0x1C)<<10); //B8
+dev->out_w1ts = (wr_pin); //WR PIN05 
+#endif
 	}
 	
      lv_disp_flush_ready(drv);
